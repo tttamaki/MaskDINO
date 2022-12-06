@@ -31,7 +31,8 @@ class MaskDINOHead(nn.Module):
             for k in list(state_dict.keys()):
                 newk = k
                 if "sem_seg_head" in k and not k.startswith(prefix + "predictor"):
-                    newk = k.replace(prefix, prefix + "pixel_decoder.")
+                    # newk = k.replace(prefix, prefix + "pixel_decoder.")
+                    pass
                     # logger.debug(f"{k} ==> {newk}")
                 if newk != k:
                     state_dict[newk] = state_dict[k]
@@ -100,11 +101,12 @@ class MaskDINOHead(nn.Module):
             ),
         }
 
-    def forward(self, features, mask=None,targets=None):
-        return self.layers(features, mask,targets=targets)
+    def forward(self, features, mask=None, targets=None):
+        return self.layers(features, mask, targets=targets)
 
-    def layers(self, features, mask=None,targets=None):
-        mask_features, transformer_encoder_features, multi_scale_features = self.pixel_decoder.forward_features(features, mask)
+    def layers(self, features, mask=None, targets=None):
+        mask_features, transformer_encoder_features, multi_scale_features = self.pixel_decoder.forward_features(
+            features, mask)
 
         predictions = self.predictor(multi_scale_features, mask_features, mask, targets=targets)
 
